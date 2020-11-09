@@ -1,0 +1,8 @@
+metadata:
+vnfd_id: {{ .ID }}
+vnf_provider_id: {{ .Provider }}
+vnf_product_name: {{ .ProductName }}
+vnf_release_date_time : {{ .ReleaseDateTime }}
+vnf_software_version: {{ .SoftwareVersion }}
+compatible_specification_versions: 2.7.1
+vnfm_info: gvnfmdriver

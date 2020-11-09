@@ -1,0 +1,122 @@
+tosca_definitions_version: tosca_simple_profile_for_nfv_1_0_0
+description: Network Function description
+imports:
+  - vmware_etsi_nfv_sol001_vnfd_2_5_1_types.yaml
+node_types:
+  tosca.nodes.nfv.VMware.CNF.{{ .CSARName }}:
+    derived_from: tosca.nodes.nfv.VMware.CNF
+    interfaces:
+      Vnflcm:
+        type: tosca.interfaces.nfv.Vnflcm
+  tosca.nodes.nfv.Vdu.Compute.Helm.{{ .HelmStepName }}:
+    derived_from: tosca.nodes.nfv.Vdu.Compute.Helm
+    properties:
+      configurable_properties:
+        type: tosca.datatypes.nfv.VnfcConfigurableProperties.{{ .HelmStepName }}
+        required: true
+data_types:
+  tosca.datatypes.nfv.VnfcConfigurableProperties.{{ .HelmStepName }}:
+    derived_from: tosca.datatypes.nfv.VnfcConfigurableProperties
+    properties:
+      additional_vnfc_configurable_properties:
+        type: >-
+          tosca.datatypes.nfv.VnfcAdditionalConfigurableProperties.{{ .HelmStepName }}
+        description: Describes additional configuration for VNFC that can be configured
+        required: true
+  tosca.datatypes.nfv.VnfcAdditionalConfigurableProperties.{{ .HelmStepName }}:
+    derived_from: tosca.datatypes.nfv.VnfcAdditionalConfigurableProperties
+    properties:
+      values:
+        required: true
+        propertyName: values
+        description: ''
+        default: ''
+        type: string
+        format: file
+topology_template:
+  substitution_mappings:
+    node_type: tosca.nodes.nfv.VMware.CNF.{{ .CSARName }}
+    properties:
+      descriptor_id: {{ .ID }}
+      provider: {{ .Provider }}
+      vendor: '{{ .Vendor }}'
+      product_name: {{ .ProductName }}
+      version: {{ .HelmChartVersion }}
+      id: id
+      software_version: {{ .SoftwareVersion }}
+      descriptor_version: descriptor_version
+      flavour_id: default
+      flavour_description: default
+      vnfm_info:
+        - gvnfmdriver
+    interfaces:
+      Vnflcm: {}
+  node_templates:
+    {{ .CSARName }}:
+      node_type: tosca.nodes.nfv.VMware.CNF.{{ .CSARName }}
+      properties:
+        descriptor_id: {{ .ID }}
+        provider: {{ .Provider }}
+        vendor: '{{ .Vendor }}'
+        product_name: {{ .ProductName }}
+        version: {{ .HelmChartVersion }}
+        id: id
+        software_version: {{ .SoftwareVersion }}
+        descriptor_version: descriptor_version
+        flavour_id: default
+        flavour_description: default
+        vnfm_info:
+          - gvnfmdriver
+      interfaces:
+        Vnflcm: {}
+    {{ .HelmStepName }}:
+      type: tosca.nodes.nfv.Vdu.Compute.Helm.{{ .HelmStepName }}
+      properties:
+        name: {{ .HelmStepName }}
+        description: '{{ .HelmStepDescription }}'
+        chartName: {{ .HelmChartName }}
+        chartVersion: {{ .HelmChartVersion }}
+        helmVersion: v3
+        id: helm1
+        configurable_properties:
+          additional_vnfc_configurable_properties:
+            type: >-
+              tosca.datatypes.nfv.VnfcAdditionalConfigurableProperties.{{ .HelmStepName }}
+            values: ''
+  policies:
+    - policy_scale:
+        type: tosca.policies.nfv.SupportedVnfInterface
+        properties:
+          interface_name: scale
+          interface_type: operation
+          isEnabled: true
+    - policy_workflow:
+        type: tosca.policies.nfv.SupportedVnfInterface
+        properties:
+          interface_name: workflow
+          interface_type: operation
+          isEnabled: true
+    - policy_reconfigure:
+        type: tosca.policies.nfv.SupportedVnfInterface
+        properties:
+          interface_name: reconfigure
+          interface_type: operation
+          isEnabled: true
+    - policy_update:
+        type: tosca.policies.nfv.SupportedVnfInterface
+        properties:
+          interface_name: update
+          interface_type: operation
+          isEnabled: true
+    - policy_upgrade:
+        type: tosca.policies.nfv.SupportedVnfInterface
+        properties:
+          interface_name: upgrade
+          interface_type: operation
+          isEnabled: true
+    - policy_upgrade_package:
+        type: tosca.policies.nfv.SupportedVnfInterface
+        properties:
+          interface_name: upgrade_package
+          interface_type: operation
+          isEnabled: true
